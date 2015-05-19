@@ -14,7 +14,7 @@ class UserPageInfo {
 	 * @return string
 	 */
 
-	public function userpageinfo ( &$parser, $frame, $args ) {
+	public static function process( &$parser, $frame, $args ) {
 
 		global $wgUPAllowedGroups;
 		global $wgUser;
@@ -52,7 +52,7 @@ class UserPageInfo {
 		}
 		
 		//Now do
-		return($this->userget($title, $param));
+		return(self::userget($title, $param));
 		
 	}
 
@@ -66,13 +66,13 @@ class UserPageInfo {
 		$username = $userpage->getBaseText();
 		
 		if ($param == 'email') { 
-			return($this->getUserEmail($username));
+			return(self::getUserEmail($username));
 		}
 		elseif ($param == 'groups') {
-			return($this->getUserGroups($username));
+			return(self::getUserGroups($username));
 		}
 		else {
-			return($this->getUserRealName($username));
+			return(self::getUserRealName($username));
 		}
 
 	}	

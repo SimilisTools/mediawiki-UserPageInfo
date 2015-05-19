@@ -43,11 +43,11 @@ call_user_func( function() {
 			'descriptionmsg' => 'userpageinfo-desc',
 	);
 	
-	$GLOBALS['wgAutoloadClasses']['UserPageInfo'] = dirname(__FILE__) . '/UserPageInfo_body.php';
+	$GLOBALS['wgAutoloadClasses']['UserPageInfo'] = __DIR__ . '/UserPageInfo_body.php';
 	$GLOBALS['wgMessagesDirs']['UserPageInfo'] = __DIR__ . '/i18n';
 
-	$GLOBALS['wgExtensionMessagesFiles']['UserPageInfo'] = dirname( __FILE__ ) . '/UserPageInfo.i18n.php';
-	$GLOBALS['wgExtensionMessagesFiles']['UserPageInfoMagic'] = dirname(__FILE__) . '/UserPageInfo.i18n.magic.php';
+	$GLOBALS['wgExtensionMessagesFiles']['UserPageInfo'] = __DIR__ . '/UserPageInfo.i18n.php';
+	$GLOBALS['wgExtensionMessagesFiles']['UserPageInfoMagic'] = __DIR__ . '/UserPageInfo.i18n.magic.php';
 	
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'wfRegisterUserPageInfo';
 
@@ -56,7 +56,7 @@ call_user_func( function() {
 function wfRegisterUserPageInfo( $parser ) {
 
 	// Can be filtered at the parser level, current user group and page, only user ns and avoid supges
-	$parser->setFunctionHook( 'userpageinfo', 'UserPageInfo::userpageinfo', Parser::SFH_OBJECT_ARGS );
+	$parser->setFunctionHook( 'userpageinfo', 'UserPageInfo::process', Parser::SFH_OBJECT_ARGS );
 	return true;
 	
 }
