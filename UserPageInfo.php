@@ -26,72 +26,37 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 
-// At first, only allow to sysop to be checked
-$wgUPAllowedGroups['email'] = array('sysop');
-$wgUPAllowedGroups['realname'] = array('sysop');
-$wgUPAllowedGroups['groups'] = array('sysop');
+//self executing anonymous function to prevent global scope assumptions
+call_user_func( function() {
 
-$wgExtensionFunctions[] = 'wfSetupUserPageInfo';
-$wgExtensionCredits['parserhook'][] = array(
-        'path' => __FILE__,
-        'name' => 'UserPageInfo',
-        'author' => 'Toni Hermoso',
-        'version' => '0.1',
-        'url' => 'http://www.mediawiki.org/wiki/Extension:UserPageInfo',
-        'descriptionmsg' => 'userpageinfo-desc',
-);
+	// At first, only allow to sysop to be checked
+	$GLOBALS['wgUPAllowedGroups']['email'] = array('sysop');
+	$GLOBALS['wgUPAllowedGroups']['realname'] = array('sysop');
+	$GLOBALS['wgUPAllowedGroups']['groups'] = array('sysop');
+	
+	$GLOBALS['wgExtensionCredits']['parserhook'][] = array(
+			'path' => __FILE__,
+			'name' => 'UserPageInfo',
+			'author' => 'Toni Hermoso',
+			'version' => '0.1',
+			'url' => 'https://github.com/SimilisTools/mediawiki-UserPageInfo',
+			'descriptionmsg' => 'userpageinfo-desc',
+	);
+	
+	$GLOBALS['wgAutoloadClasses']['UserPageInfo'] = dirname(__FILE__) . '/UserPageInfo_body.php';
+	$GLOBALS['wgMessagesDirs']['UserPageInfo'] = __DIR__ . '/i18n';
 
-$wgAutoloadClasses['ExtUserPageInfo'] = dirname(__FILE__) . '/UserPageInfo_body.php';
-$wgExtensionMessagesFiles['UserPageInfo'] = dirname( __FILE__ ) . '/UserPageInfo.i18n.php';
-$wgExtensionMessagesFiles['UserPageInfoMagic'] = dirname(__FILE__) . '/UserPageInfo.i18n.magic.php';
+	$GLOBALS['wgExtensionMessagesFiles']['UserPageInfo'] = dirname( __FILE__ ) . '/UserPageInfo.i18n.php';
+	$GLOBALS['wgExtensionMessagesFiles']['UserPageInfoMagic'] = dirname(__FILE__) . '/UserPageInfo.i18n.magic.php';
+	
+	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'wfRegisterUserPageInfo';
 
+} );
 
-function wfSetupUserPageInfo() {
-	global $wgUPHookStub, $wgHooks;
+function wfRegisterUserPageInfo( $parser ) {
 
-	$wgUPHookStub = new UserPageInfo_HookStub;
-
-	$wgHooks['ParserFirstCallInit'][] = array( &$wgUPHookStub, 'registerParser' );
-	$wgHooks['ParserClearState'][] = array( &$wgUPHookStub, 'clearState' );
-}
-
-/**
- * Stub class to defer loading of the bulk of the code until a User function is
- * actually used.
- */
-class UserPageInfo_HookStub {
-
-        var $realObj;
-	/**
-	 * @param $parser Parser
-	 * @return bool
-	 */
-	function registerParser( &$parser ) {
-
-            // Can be filtered at the parser level, current user group and page, only user ns and avoid supges
-	    $parser->setFunctionHook( 'userpageinfo',  array(&$this, 'userpageinfo') );
-	    return true;
-        
-	}
-
-	/**
-	 * Defer ParserClearState
-	 */
-	function clearState( &$parser ) {
-		if ( !is_null( $this->realObj ) ) {
-			$this->realObj->clearState( $parser );
-		}
-		return true;
-	}
-
-	/**
-	 * Pass through function call
-	 */
-	function __call( $name, $args ) {
-		if ( is_null( $this->realObj ) ) {
-			$this->realObj = new ExtUserPageInfo;
-			$this->realObj->clearState( $args[0] );
-		}
-		return call_user_func_array( array( $this->realObj, $name ), $args );
-	}
+	// Can be filtered at the parser level, current user group and page, only user ns and avoid supges
+	$parser->setFunctionHook( 'userpageinfo', 'UserPageInfo::userpageinfo', Parser::SFH_OBJECT_ARGS );
+	return true;
+	
 }

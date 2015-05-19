@@ -1,38 +1,35 @@
 <?php
 /*
- * 2011-2012
+ * 2011-2015
  * Provides user email or real name information, only to be shown in user pages
  *
 */
 
-class ExtUserPageInfo
-{      
-	/**
-         * The rendering object (skin)
-         */
-        private $display=NULL;
-
+class UserPageInfo {
+	
 	/**
 	 * @param $parser Parser
-	 * @return bool
+	 * @param $frame PPFrame
+	 * @param $args array
+	 * @return string
 	 */
-	function clearState(&$parser) {
-		$parser->pf_ifexist_breakdown = array();
-		return true;
-	}
 
-	public function userpageinfo ($parser, $param='realname') {
+	public function userpageinfo ( &$parser, $frame, $args ) {
 
 		global $wgUPAllowedGroups;
-		global $wgUser;		
+		global $wgUser;
 
 		$parser->disableCache();
 		$title = $parser->getTitle();
 
 		$user = $wgUser;
-		
-		// Can be filtered at the parser level, current user group and page, only user ns and avoid supages
+		if ( count( $args ) > 0 ) {
+			$param = trim( $frame->expand( $args[0] ) );
+		} else {
+			$param = 'email'; // Email default
+		}
 
+		// Can be filtered at the parser level, current user group and page, only user ns and avoid supages
 		$cur_ns = $title->getNamespace();
 		$cur_gps = $user->getEffectiveGroups();
 		
@@ -55,10 +52,9 @@ class ExtUserPageInfo
 		}
 		
 		//Now do
-		
 		return($this->userget($title, $param));
 		
-        }
+	}
 
 	
 	private function userget($userpage, $param) {
@@ -96,11 +92,10 @@ class ExtUserPageInfo
 	}
 	
 	//Function for getting user real name of that profile
-        private function getUserRealName($username) {
+	private function getUserRealName($username) {
 
 		$user = User::newFromName($username);	
 		return ($user->getRealName());
-        }
+    }
 
 }
-?>
