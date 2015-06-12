@@ -57,6 +57,7 @@ function wfRegisterUserPageInfo( $parser ) {
 
 	// Can be filtered at the parser level, current user group and page, only user ns and avoid supges
 	$parser->setFunctionHook( 'userpageinfo', 'UserPageInfo::process', Parser::SFH_OBJECT_ARGS );
+	$parser->setFunctionHook( 'userpagecheck', 'UserPageInfo::check', Parser::SFH_OBJECT_ARGS );
 	return true;
 	
 }

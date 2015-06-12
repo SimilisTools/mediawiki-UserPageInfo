@@ -56,6 +56,71 @@ class UserPageInfo {
 		
 	}
 
+	/**
+	 * @param $parser Parser
+	 * @param $frame PPFrame
+	 * @param $args array
+	 * @return string
+	 */
+
+	public static function check( &$parser, $frame, $args ) {
+
+		global $wgUPAllowedGroups;
+		global $wgUser;
+
+		$parser->disableCache();
+		$title = $parser->getTitle();
+
+		$check = null;
+		$yes = 1;
+		$no = 0;
+
+		$user = $wgUser;
+		if ( count( $args ) > 0 ) {
+			$param = trim( $frame->expand( $args[0] ) );
+
+			if ( array_key_exists( 1, $args ) ) {
+				$check = trim( $frame->expand( $args[1] ) );
+			}
+
+			if ( array_key_exists( 2, $args ) ) {
+				$yes = trim( $frame->expand( $args[2] ) );
+			}
+
+			if ( array_key_exists( 3, $args ) ) {
+				$no = trim( $frame->expand( $args[3] ) );
+			}
+
+		} else {
+			$param = 'email'; // Email default
+		}
+
+		// Can be filtered at the parser level, current user group and page, only user ns and avoid supages
+		$cur_ns = $title->getNamespace();
+		$cur_gps = $user->getEffectiveGroups();
+		
+		$ingroup = false;
+		
+		foreach ($cur_gps as $cur_gp) {
+			if (in_array($cur_gp, $wgUPAllowedGroups[$param])) {
+				$ingroup = true;
+				break;
+			}
+		}
+
+		if (!$ingroup) {
+			return(false);
+		}
+		
+		// Check if in User Namespace
+		if ($cur_ns != NS_USER) {
+			return(false);
+		}
+		
+		//Now do
+		return(self::userget($title, $param));
+		
+	}
 	
 	private function userget($userpage, $param) {
 
