@@ -117,8 +117,22 @@ class UserPageInfo {
 			return(false);
 		}
 		
-		//Now do
-		return(self::userget($title, $param));
+		$userget = self::userget($title, $param);
+		
+		if ( $params != 'groups' ) {
+			if ( $userget == $check ) {
+				return $yes;
+			}
+		} else {
+			$usergetArr = explode( ",", $userget );
+			// Redo array
+			if ( in_array( $check, $usergetArr ) ) {
+				return $yes;
+			}
+		}
+		
+		//Default no
+		return $no;
 		
 	}
 	
