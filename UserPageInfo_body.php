@@ -42,7 +42,7 @@ class UserPageInfo {
 			}
 		}
 
-		if (!$ingroup) {
+		if (!$ingroup && !( self::isMaintenance() ) ) {
 			return(false);
 		}
 		
@@ -108,7 +108,7 @@ class UserPageInfo {
 			}
 		}
 
-		if (!$ingroup) {
+		if (!$ingroup && !( self::isMaintenance() )) {
 			return(false);
 		}
 		
@@ -176,5 +176,13 @@ class UserPageInfo {
 		$user = User::newFromName($username);	
 		return ($user->getRealName());
     }
+
+	private function isMaintenance() {
+		if ( is_null( RequestContext::getMain()->getTitle() ) ) {
+			return true;
+		}
+
+		return false;
+	}
 
 }
