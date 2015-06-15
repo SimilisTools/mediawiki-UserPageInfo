@@ -119,7 +119,7 @@ class UserPageInfo {
 		
 		$userget = self::userget($title, $param);
 		
-		if ( $params != 'groups' ) {
+		if ( $param != 'groups' ) {
 			if ( $userget == $check ) {
 				return $yes;
 			}
