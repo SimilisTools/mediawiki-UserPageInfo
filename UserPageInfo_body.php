@@ -136,7 +136,7 @@ class UserPageInfo {
 		
 	}
 	
-	private function userget($userpage, $param) {
+	private static function userget($userpage, $param) {
 
 		if ($userpage->isSubpage()) {
 			return("");
@@ -157,27 +157,27 @@ class UserPageInfo {
 	}	
 
 	//Function for getting user email of that profile
-	private function getUserEmail($username) {
+	private static function getUserEmail($username) {
 		
 		$user = User::newFromName($username);
 		return ($user->getEmail());
 	}
 	
 	//Function for getting user groups of that profile
-	private function getUserGroups($username) {
+	private static function getUserGroups($username) {
 
 		$user = User::newFromName($username);
 		return(implode(",", $user->getGroups()));
 	}
 	
 	//Function for getting user real name of that profile
-	private function getUserRealName($username) {
+	private static function getUserRealName($username) {
 
 		$user = User::newFromName($username);	
 		return ($user->getRealName());
     }
 
-	private function isMaintenance() {
+	private static function isMaintenance() {
 		if ( is_null( RequestContext::getMain()->getTitle() ) ) {
 			return true;
 		}
